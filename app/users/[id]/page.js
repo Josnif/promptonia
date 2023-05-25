@@ -1,36 +1,54 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import Profile from "@components/Profile";
 
 const UserProfile = ({ params }) => {
     const searchParams = useSearchParams();
-    const username = searchParams.get('user');
+    // const username = searchParams.get('user');
+    const [user, setUser] = useState({});
     const userId = params.id;
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const fetchPosts = async () => {
-          const response = await fetch(`/api/users/${userId}/posts`);
-          const data = await response.json();
-
-          
-          setPosts(data);
+            setIsLoading(true);
+            try {
+                const response = await fetch(`/api/users/${userId}/posts`);
+                const data = await response.json();
+      
+                
+                setPosts(data.prompts);
+                setUser(data.user);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setIsLoading(false);
+            }
         }
     
-        console.log(userId);
         if(userId) fetchPosts();
       }, [])
 
 
     return (
-        <Profile 
-            name={username ?? 'User'}
-            desc="Welcome to your personalized profile page"
-            data={posts}
-        />
+        <>
+            {/* {isLoading ? (
+                <ProfileSkeleton />
+            ) : ( */}
+                {/* <Suspense fallback={<ProfileSkeleton />}> */}
+                    <Profile 
+                        name={user?.username}
+                        desc=""
+                        data={posts}
+                        // loading={isLoading}
+                    />
+                {/* </Suspense> */}
+            {/* )} */}
+        </>
     )
 }
 

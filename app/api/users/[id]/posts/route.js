@@ -1,4 +1,5 @@
 import Prompt from "@models/prompt";
+import User from "@models/user";
 import { connectToDB } from "@utils/database";
 
 export const GET = async (request, { params }) => {
@@ -9,7 +10,14 @@ export const GET = async (request, { params }) => {
             creator: params.id
         }).populate('creator');
 
-        return new Response(JSON.stringify(prompts), { status: 200 })
+        const user = await User.findById(params.id);
+
+        const data = {
+            prompts: prompts,
+            user: user
+        };
+
+        return new Response(JSON.stringify(data), { status: 200 })
     } catch (error) {
         return new Response("Internal server error", {status: 500})
     }

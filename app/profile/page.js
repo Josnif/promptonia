@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import Profile from "@components/Profile";
+import ProfileSkeleton from "@components/ProfileSkeleton";
 
 const MyProfile = () => {
     const {data: session} = useSession();
     const router = useRouter();
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true)
 
     const handleEdit = (post) => {
         router.push(`update-prompt?id=${post._id}`)
@@ -35,11 +37,15 @@ const MyProfile = () => {
 
     useEffect(() => {
         const fetchPosts = async () => {
-          const response = await fetch(`api/users/${session?.user.id}/posts`);
-          const data = await response.json();
-
-          
-          setPosts(data);
+            setIsLoading(true);
+            try {
+                const response = await fetch(`api/users/${session?.user.id}/posts`);
+                const data = await response.json();
+                
+                setPosts(data.prompts);
+            } catch (error) {
+                console.log(error);
+            }
         }
         console.log(session?.user.id);
     
@@ -48,13 +54,23 @@ const MyProfile = () => {
 
 
     return (
-        <Profile 
-            name={session?.user.name}
-            desc="Welcome to your personalized profile page"
-            data={posts}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-        />
+        <>
+            {isLoading ? (
+                <ProfileSkeleton />
+            ) : (
+                <Suspense fallback={<ProfileSkeleton />}>
+                    <Profile 
+                        name={session?.user.name}
+                        desc="Welcome to your personalized profile page"
+                        data={posts}
+                        handleEdit={handleEdit}
+                        handleDelete={handleDelete}
+                    />
+                </Suspense>
+            )
+        }
+
+        </>
     )
 }
 

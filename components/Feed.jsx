@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 
 import PromptCard from "./PromptCard";
+import PromptSkeleton from "./PromptSkeleton";
 
 const PromptCardList = ({ data, handleTagClick }) => {
   return (
-    <div className="mt-16 prompt_layout">
+    <div className="mt-16 sm:grid-cols-2 prompt_layout">
       {data.map((post) => (
        <PromptCard 
-        key={post.id}
+        key={`post-${post._id}`}
         post={post}
         handleTagClick={handleTagClick}
        />
@@ -22,16 +23,51 @@ const Feed = () => {
   const [posts, setPosts] = useState([]);
   
   const [searchText, setSearchText] = useState('');
-  const handleSearchChange = (e) => {
+  const [searchFilteredPosts, setSearchFilteredPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value)
   }
+
+  const searchPost = (searchText) => {
+    const regex = new RegExp(searchText)
+    const data = posts.filter(post => {
+      return regex.test(post.prompt)
+              || regex.test(post.tag)
+              || regex.test(post.creator.username);
+    })
+
+    setSearchFilteredPosts(data)
+  }
+
+  const handleTagClick = (tag) => {
+    setSearchText(tag)
+  }
+
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      searchPost(searchText)
+    }, 500);
+    
+    return () => clearTimeout(debounceTimer);
+  }, [searchText]);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch('api/prompt');
-      const data = await response.json();
+      setIsLoading(true);
 
-      setPosts(data);
+      try {
+        const response = await fetch('api/prompt');
+        const data = await response.json();
+  
+        setPosts(data);
+        setIsLoading(false);
+      } catch (error) {
+        // setIsLoading(false);
+      }
     }
 
     fetchPosts();
@@ -49,10 +85,14 @@ const Feed = () => {
         />
       </form>
 
-      <PromptCardList 
-        data={posts}
-        handleTagClick={() => {}}
-      />
+      {isLoading ? (
+        <PromptSkeleton />
+      ) : (
+        <PromptCardList 
+          data={searchText.length < 1 ? posts : searchFilteredPosts}
+          handleTagClick={handleTagClick}
+        />
+      )}
     </section>
   )
 }
