@@ -32,7 +32,10 @@ const Nav = () => {
           height={30}
           className='object-contain'
         /> */}
-        <p className='logo_text'>Jot-Prompt</p>
+        <p className='logo_text'>
+          {/* Jot-Prompt */}
+          PROMPTONIA
+        </p>
       </Link>
 
       {/* Destop Navigation  */}
@@ -89,7 +92,7 @@ const Nav = () => {
                 <button type='button' 
                   key={provider.name}
                   onClick={() => signIn(provider.id)}
-                  className='black_btn'
+                  className='black_btn mr-3'
                 >
                   Sign In
                 </button>
