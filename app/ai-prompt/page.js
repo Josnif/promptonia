@@ -3,15 +3,21 @@ import React, { useState } from 'react';
 
 function AI_promptGenerator() {
   const [inputText, setInputText] = useState('');
+  const [apiKey, setApiKey] = useState('');
   const [generatedPrompt, setGeneratedPrompt] = useState('');
 
-  const generatePrompt = async () => {
+  const generatePrompt = async (e) => {
+    e.preventDefault();
+    if (apiKey.length < 1) {
+        alert('API exceeded maximum usage');
+        return;
+    }
     try {
         const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': 'Bearer YOUR_OPENAI_API_KEY'
+              'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
               prompt: inputText,
@@ -35,7 +41,7 @@ function AI_promptGenerator() {
             Let AI generate amazing prompts, and let your imagination run wild with any AI-powered platform.
         </p>
         <form
-            // onSubmit={handleSubmit}
+            onSubmit={generatePrompt}
             className='mt-10 w-full max-w-2xl flex flex-col gap-7 glassmorphism'
         >
             <label>
@@ -52,6 +58,7 @@ function AI_promptGenerator() {
             <div className='flex-end mb-3'>
                 <button  
                     onClick={generatePrompt}
+                    type="submit"
                     className='px-5 py-1.5 text-sm bg-primary-orange rounded-full text-white'
                 >
                     Generate AI Prompt
