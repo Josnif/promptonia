@@ -12,7 +12,7 @@ const Profile = ({ name, desc, data, handleEdit, handleDelete }) => {
             </h1>
         ) : (
             <div className="w-full animate-pulse">
-                <div className='w-[70%] h-8 bg-gray-200 rounded-lg dark:bg-gray-700'></div>
+                <div className='w-[70%] h-8 bg-gray-200 rounded-lg dark:bg-gray-600'></div>
             </div>
         )}
 

@@ -11,7 +11,8 @@ const MyProfile = () => {
     const {data: session} = useSession();
     const router = useRouter();
     const [posts, setPosts] = useState([]);
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(true);
+    const [userID, setUserID] = useState('');
 
     const handleEdit = (post) => {
         router.push(`update-prompt?id=${post._id}`)
@@ -43,12 +44,13 @@ const MyProfile = () => {
                 const data = await response.json();
                 
                 setPosts(data.prompts);
+                setIsLoading(false);
             } catch (error) {
                 console.log(error);
             }
         }
-        console.log(session?.user.id);
-    
+        
+        setUserID(session?.user.id);
         if(session?.user.id) fetchPosts();
       }, [])
 

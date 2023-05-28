@@ -4,11 +4,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { signIn, signOut, useSession, getProviders } from 'next-auth/react'
+import Theme from './Theme';
 
 const Nav = () => {
   const { data: session } = useSession()
   const [providers, setProviders] = useState(null)
   const [toggleDropdown, setToggleDropdown] = useState(false)
+  const [toggleProfileDropdown, setToggleProfileDropdown] = useState(false)
 
   useEffect(() => {
     const setUpProviders = async () => {
@@ -21,40 +23,64 @@ const Nav = () => {
   }, [])
 
   return (
-    <nav className='flex-between w-full mb-16 pt-3'>
+    <nav className='flex-between items-center w-full mb-16 pt-3'>
       <Link href='/' className='flex gap-2 flex-center'>
-        <Image 
+        {/* <Image 
           src="/assets/images/logo.jpeg" 
           alt='Promptonia logo'
           width={30}
           height={30}
           className='object-contain'
-        />
-        <p className='logo_text'>Promptonia</p>
+        /> */}
+        <p className='logo_text'>Jot-Prompt</p>
       </Link>
 
       {/* Destop Navigation  */}
       <div className='sm:flex hidden'>
         {session?.user ? (
-          <div className='flex gap-3 md:gap-5'>
-            <Link href='/create-prompt' className='black_btn'>
+          <div className='flex gap-3 md:gap-5 items-center relative'>
+            <Link href='/ai-prompt' className='hover:text-gray-400'>
+              AI Prompt
+            </Link>
+
+            <Link href='/create-prompt' className='hover:text-gray-400'>
               Create Prompt
             </Link>
 
-            <button type='button' onClick={signOut} className='outline_btn'>
-              Sign out
-            </button>
-
-            <Link href='/profile'>
+            <div className="flex">
               <Image
-                // src='/assets/images/logo.svg'
                 src={session?.user.image}
-                width={37}
-                height={37}
+                // src='/assets/images/logo.svg'
+                width={35}
+                height={35}
                 className='rounded-full cursor-pointer'
                 alt='profile'
+                onClick={() => setToggleProfileDropdown((prev) => !prev)}
               />
-            </Link>
+              {
+                toggleProfileDropdown && 
+                <div className="dropdown">
+                  <Link 
+                    href='/profile'
+                    className='dropdown_link'
+                    onClick={() => setToggleProfileDropdown(false)}
+                  >
+                    My Profile
+                  </Link>
+                  <button 
+                    type='button'
+                    onClick={() => {
+                      setToggleProfileDropdown(false);
+                      signOut();
+                    }}
+                    className='mt-3 w-full black_btn'
+                  >
+                    Sign out
+                  </button>
+                </div>
+              }
+            </div>
+            <Theme />
           </div>
         ) : (
           <>
@@ -69,6 +95,7 @@ const Nav = () => {
                 </button>
               ))
             }
+            <Theme />
           </>
         )
         }
@@ -114,6 +141,7 @@ const Nav = () => {
                 >
                   Sign out
                 </button>
+                <Theme />
               </div>
             }
           </div>
@@ -130,6 +158,7 @@ const Nav = () => {
                 </button>
               ))
             }
+            <Theme />
           </>
         )}
       </div>

@@ -4,15 +4,15 @@ import Nav from '@components/Nav'
 import Provider from '@components/Provider'
 
 export const metadata = {
-  title: 'Promptonia',
+  title: 'Jot-Prompt',
   description: 'Discover and Generate Prompts',
 }
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
-        <Provider>
+    <Provider>
+      <html lang="en">
+        <body className='dark:bg-gray-700 dark:text-gray-200'>
           <div className='main'>
               <div className='gradient' />
           </div>
@@ -21,8 +21,8 @@ export default function RootLayout({ children }) {
             <Nav />
             {children}
           </main>
-        </Provider>
-    </body>
-    </html>
+        </body>
+      </html>
+    </Provider>
   )
 }
